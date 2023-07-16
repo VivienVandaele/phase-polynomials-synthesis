@@ -24,7 +24,7 @@ def phase_polynomial_from_circ(c, nb_qubits):
 
 def get_cnot_count_depth(c, nb_qubits):
     count = 0
-    depth = np.zeros(nb_qubits)
+    depth = np.zeros(nb_qubits, dtype=int)
     for (gate, qubits) in c:
         if gate == "cx":
             count += 1
