@@ -1,7 +1,7 @@
 import numpy as np
 import networkx as nx
 
-def phase_polynomial_synthesis(table, angles):
+def phase_polynomial_synthesis(table, angles, t_gates=True):
     table, angles = np.copy(table), np.copy(angles)
     nb_qubits = len(table)
     c = []
@@ -29,12 +29,15 @@ def phase_polynomial_synthesis(table, angles):
             for (i, j) in reversed(list(nx.bfs_edges(tree, source=root))):
                 insert_cnot(j, i)
         index = np.where(table[:,col])[0][0]
-        if angles[col] % 2:
-              c.append(("T", index)) 
-        if angles[col] % 4 >= 2:
-              c.append(("S", index)) 
-        if angles[col] % 8 >= 4:
-              c.append(("Z", index)) 
+        if t_gates:
+            if angles[col] % 2:
+                  c.append(("T", index)) 
+            if angles[col] % 4 >= 2:
+                  c.append(("S", index)) 
+            if angles[col] % 8 >= 4:
+                  c.append(("Z", index)) 
+        else:
+            c.append(("rz", (angles[col], index))) 
         table = np.delete(table, col, 1)
         angles = np.delete(angles, col)
 
@@ -51,7 +54,7 @@ def phase_polynomial_synthesis(table, angles):
                 cols = ones
                 if len(cols) == 1:
                     break
-        implement_rotation(cols[0])
+        implement_rotation(cols[0][0])
     return c
 
 def lu_decomposition(matrix):
